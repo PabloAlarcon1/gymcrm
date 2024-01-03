@@ -1,0 +1,15 @@
+Trainee:
+ID=1,DateOfBirth=1995-05-15,Address=123 Main St,UserId=101
+ID=2,DateOfBirth=1990-03-10,Address=456 Park Ave,UserId=102
+
+Trainer:
+ID=1,Specialization=Cardio,UserId=201
+ID=2,Specialization=Strength,UserId=202
+
+Training:
+ID=1,TraineeId=1,TrainerId=1,TrainingName=Cardio Training,TrainingTypeId=101,TrainingDate=2024-01-10,TrainingDuration=60
+ID=2,TraineeId=2,TrainerId=2,TrainingName=Strength Training,TrainingTypeId=102,TrainingDate=2024-01-15,TrainingDuration=45
+
+TrainingType:
+ID=101,TrainingTypeName=Cardio Workout
+ID=102,TrainingTypeName=Strength Workout
