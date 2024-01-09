@@ -13,8 +13,12 @@ public class Training {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "TRAINEE:ID")
+    @JoinColumn(name = "TRAINEE_ID")
     private Trainee trainee;
+
+    @ManyToOne
+    @JoinColumn(name = "TRAINER_ID")
+    private Trainer trainer;
 
     @ManyToOne
     @JoinColumn(name = "TRAINING_TYPE_ID")
@@ -38,26 +42,28 @@ public class Training {
     public Training() {
     }
 
-    public Training(Long id, Trainee trainee, TrainingType trainingType, String trainingName, LocalDate trainingDate, Integer trainingDuration) {
+    public Training(Long id, Trainee trainee, Trainer trainer, TrainingType trainingType, String trainingName, LocalDate trainingDate, Integer trainingDuration) {
         this.id = id;
         this.trainee = trainee;
+        this.trainer = trainer;
         this.trainingType = trainingType;
         this.trainingName = trainingName;
         this.trainingDate = trainingDate;
         this.trainingDuration = trainingDuration;
     }
 
-    public Training(Trainee trainee, TrainingType trainingType, String trainingName, LocalDate trainingDate, Integer trainingDuration) {
+    public Training(Trainee trainee, Trainer trainer, TrainingType trainingType, String trainingName, LocalDate trainingDate, Integer trainingDuration) {
         this.trainee = trainee;
+        this.trainer = trainer;
         this.trainingType = trainingType;
         this.trainingName = trainingName;
         this.trainingDate = trainingDate;
         this.trainingDuration = trainingDuration;
     }
-
-
 
     // Getters y Setters
+
+
     public Long getId() {
         return id;
     }
@@ -72,6 +78,14 @@ public class Training {
 
     public void setTrainee(Trainee trainee) {
         this.trainee = trainee;
+    }
+
+    public Trainer getTrainer() {
+        return trainer;
+    }
+
+    public void setTrainer(Trainer trainer) {
+        this.trainer = trainer;
     }
 
     public TrainingType getTrainingType() {
