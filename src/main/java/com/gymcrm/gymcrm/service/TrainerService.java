@@ -4,22 +4,30 @@ import com.gymcrm.gymcrm.dao.TraineeDao;
 import com.gymcrm.gymcrm.dao.TrainerDao;
 import com.gymcrm.gymcrm.gymcrm.model.Trainee;
 import com.gymcrm.gymcrm.gymcrm.model.Trainer;
+import com.gymcrm.gymcrm.gymcrm.model.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class TrainerService {
 
     private final TrainerDao trainerDao;
+    private final UserService userService;
+    private final ProfileService profileService;
 
-    @Autowired
-    public TrainerService(TrainerDao trainerDao) {
-        this.trainerDao = trainerDao;
-    }
+
 
     public Trainer saveTrainer(Trainer trainer) {
+        String userName = profileService.generateUsername(trainer.getUser().getFirstName(), trainer.getUser().getLastName());
+        String userPassword = profileService.generatePassword();
+        User user = trainer.getUser();
+        user.setUserName(userName);
+        user.setPassword(userPassword);
+        userService.save(user);
         return trainerDao.save(trainer);
     }
 

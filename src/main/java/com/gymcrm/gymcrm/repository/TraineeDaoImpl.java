@@ -50,4 +50,7 @@ public class TraineeDaoImpl implements TraineeDao {
         traineeMap.remove(id);
 
     }
+
+
+
 }
