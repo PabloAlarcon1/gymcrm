@@ -3,6 +3,7 @@ package com.gymcrm.gymcrm.gymcrm.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "TRAINEE")
@@ -19,8 +20,11 @@ public class Trainee {
     private String address;
 
     @OneToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
     private User user;
+
+    @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL)
+    private List<Training> trainings;
 
 
 
@@ -42,7 +46,13 @@ public class Trainee {
         this.user = user;
     }
 
-
+    public Trainee(Long id, LocalDate dateOfBirth, String address, User user, List<Training> trainings) {
+        this.id = id;
+        this.dateOfBirth = dateOfBirth;
+        this.address = address;
+        this.user = user;
+        this.trainings = trainings;
+    }
 
     // Getters y Setters
 
@@ -76,5 +86,17 @@ public class Trainee {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<Training> getTrainings() {
+        return trainings;
+    }
+
+    public void setTrainings(List<Training> trainings) {
+        this.trainings = trainings;
+    }
+
+    public void addTraining(Training training) {
+        trainings.add(training);
     }
 }

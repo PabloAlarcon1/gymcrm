@@ -1,5 +1,6 @@
 package com.gymcrm.gymcrm.dao;
 
+import com.gymcrm.gymcrm.gymcrm.model.Trainee;
 import com.gymcrm.gymcrm.gymcrm.model.Trainer;
 import com.gymcrm.gymcrm.gymcrm.model.Training;
 
@@ -11,4 +12,5 @@ public interface TrainingDao {
     List<Training> findAll();
     Training update(Training training);
     void delete(Long id);
+    List<Training> findTrainingsByTrainerAndTrainee(Trainer trainer, Trainee trainee);
 }

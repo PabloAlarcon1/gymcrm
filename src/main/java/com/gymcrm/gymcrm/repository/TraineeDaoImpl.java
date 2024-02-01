@@ -37,6 +37,16 @@ public class TraineeDaoImpl implements TraineeDao {
     }
 
     @Override
+    public Trainee findByUserName(String userName) {
+        for (Trainee trainee : traineeMap.values()) {
+            if (trainee.getUser().getUserName().equals(userName)) {
+                return trainee;
+            }
+        }
+        return null; // Retornar null si no se encuentra ningún Trainee con el nombre de usuario dado
+    }
+
+    @Override
     public Trainee update(Trainee trainee) {
         if (traineeMap.containsKey(trainee.getId())) {
             traineeMap.put(trainee.getId(), trainee);
@@ -49,5 +59,10 @@ public class TraineeDaoImpl implements TraineeDao {
     public void delete(Long id) {
         traineeMap.remove(id);
 
+    }
+
+    @Override
+    public boolean existsByUsername(String userName) {
+        return traineeMap.values().stream().anyMatch(trainee -> trainee.getUser().getUserName().equals(userName));
     }
 }

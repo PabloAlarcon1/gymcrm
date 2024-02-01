@@ -32,6 +32,16 @@ public class TrainerDaoImpl implements TrainerDao {
     }
 
     @Override
+    public Trainer findByUserName(String userName) {
+        for (Trainer trainer : trainerMap.values()) {
+            if (trainer.getUser().getUserName().equals(userName)) {
+                return trainer;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public List<Trainer> findAll() {
         return new ArrayList<>(trainerMap.values());
     }
@@ -49,4 +59,10 @@ public class TrainerDaoImpl implements TrainerDao {
     public void delete(Long id) {
         trainerMap.remove(id);
     }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return trainerMap.values().stream().anyMatch(trainer -> trainer.getUser().getUserName().equals(username));
+    }
+
 }

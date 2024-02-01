@@ -2,6 +2,8 @@ package com.gymcrm.gymcrm.gymcrm.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "TRAINER")
 public class Trainer {
@@ -18,7 +20,8 @@ public class Trainer {
     @JoinColumn(name = "USER_ID")
     private User user;
 
-
+    @OneToMany(mappedBy = "trainer")
+    private List<Training> trainings;
 
 
     // Constructores
@@ -26,19 +29,18 @@ public class Trainer {
     public Trainer() {
     }
 
-    public Trainer(Long id, Specialization specialization, User user) {
+    public Trainer(Long id, Specialization specialization, User user, List<Training> trainings) {
         this.id = id;
         this.specialization = specialization;
         this.user = user;
+        this.trainings = trainings;
     }
 
-    public Trainer(Specialization specialization, User user) {
+    public Trainer(Specialization specialization, User user, List<Training> trainings) {
         this.specialization = specialization;
         this.user = user;
+        this.trainings = trainings;
     }
-
-
-
 
     // Getters y Setters
 
@@ -66,4 +68,15 @@ public class Trainer {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public List<Training> getTrainings() {
+        return trainings;
+    }
+
+    public void setTrainings(List<Training> trainings) {
+        this.trainings = trainings;
+    }
 }
+
+
+

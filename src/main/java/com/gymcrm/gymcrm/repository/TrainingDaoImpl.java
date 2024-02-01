@@ -1,6 +1,8 @@
 package com.gymcrm.gymcrm.repository;
 
 import com.gymcrm.gymcrm.dao.TrainingDao;
+import com.gymcrm.gymcrm.gymcrm.model.Trainee;
+import com.gymcrm.gymcrm.gymcrm.model.Trainer;
 import com.gymcrm.gymcrm.gymcrm.model.Training;
 import org.springframework.stereotype.Repository;
 
@@ -48,5 +50,17 @@ public class TrainingDaoImpl implements TrainingDao {
     public void delete(Long id) {
         trainingMap.remove(id);
 
+    }
+
+    public List<Training> findTrainingsByTrainerAndTrainee(Trainer trainer, Trainee trainee) {
+        List<Training> trainings = new ArrayList<>();
+
+        for (Training training : trainer.getTrainings()) {
+            if (training.getTrainee() != null && training.getTrainee().equals(trainee)) {
+                trainings.add(training);
+            }
+        }
+
+        return trainings;
     }
 }
