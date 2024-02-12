@@ -1,6 +1,6 @@
 package com.gymcrm.gymcrm.gymcrm.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "TRAINING_TYPE")

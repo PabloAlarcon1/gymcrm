@@ -1,58 +1,62 @@
 package com.gymcrm.gymcrm.service;
 
-import com.gymcrm.gymcrm.dao.TraineeDao;
-import com.gymcrm.gymcrm.dao.TrainingDao;
 import com.gymcrm.gymcrm.gymcrm.model.Trainee;
 import com.gymcrm.gymcrm.gymcrm.model.Trainer;
 import com.gymcrm.gymcrm.gymcrm.model.Training;
+import com.gymcrm.gymcrm.repository.TraineeRepository;
+import com.gymcrm.gymcrm.repository.TrainingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class TraineeService {
 
-    private final TraineeDao traineeDao;
-    private final TrainingDao trainingDao;
+    private final TraineeRepository traineeRepository;
+    private final TrainingRepository trainingRepository;
 
     @Autowired
-    public TraineeService(TraineeDao traineeDao, TrainingDao trainingDao) {
-        this.traineeDao = traineeDao;
-        this.trainingDao = trainingDao;
+    public TraineeService(TraineeRepository traineeRepository, TrainingRepository trainingRepository) {
+        this.traineeRepository = traineeRepository;
+        this.trainingRepository = trainingRepository;
     }
 
     public Trainee saveTrainee(Trainee trainee) {
-        if (traineeDao.existsByUsername(trainee.getUser().getUserName())) {
+        if (traineeRepository.existsByUsername(trainee.getUser().getUserName())) {
             throw new IllegalArgumentException("Trainee with the same username already exists.");
         }
-        return traineeDao.save(trainee);
+        return traineeRepository.save(trainee);
     }
 
-    public Trainee getTraineeById(Long id) {
-        return traineeDao.findById(id);
+    public Trainee getTraineeById(Long id) {return traineeRepository.findById(id).orElse(null);
     }
 
     public List<Trainee> getAllTrainees() {
-        return traineeDao.findAll();
+        return traineeRepository.findAll();
     }
 
     public Trainee updateTrainee(Trainee trainee) {
-        return traineeDao.update(trainee);
+        return traineeRepository.save(trainee);
     }
 
     public void deleteTrainee(Long id) {
-        traineeDao.delete(id);
+        Trainee traineeToDelete = traineeRepository.findById(id).orElse(null);
+        if (traineeToDelete != null) {
+            traineeRepository.delete(traineeToDelete);
+        } else {
+            throw new IllegalArgumentException("Trainee with ID " + id + " not found.");
+        }
     }
 
     public boolean verifyCredentials(String username, String password) {
-        // Buscar el Trainee por su nombre de usuario
-        Trainee trainee = traineeDao.findByUserName(username);
+        Optional<Trainee> traineeOptional = traineeRepository.findByUserName(username);
 
-        // Verificar si se encontró un Trainee
-        if (trainee != null) {
+        if (traineeOptional.isPresent()) {
+            Trainee trainee = traineeOptional.get();
             // Comparar la contraseña proporcionada con la contraseña almacenada en el Trainee
             return trainee.getUser().getPassword().equals(password);
         } else {
@@ -62,67 +66,73 @@ public class TraineeService {
     }
 
     public Trainee getTraineeByUsername(String userName) {
-        // Buscar el Trainer por su nombre de usuario
-        return traineeDao.findByUserName(userName);
+        Optional<Trainee> traineeOptional = traineeRepository.findByUserName(userName);
+        if (traineeOptional.isPresent()) {
+            return traineeOptional.get();
+        } else {
+            throw new IllegalArgumentException("Trainee with username " + userName + " not found.");
+        }
     }
 
     public void changePassword(Long traineeId, String newPassword) {
-        Trainee trainee = traineeDao.findById(traineeId);
-        if (trainee != null) {
+        Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
+        if (traineeOptional.isPresent()) {
+            Trainee trainee = traineeOptional.get();
             trainee.getUser().setPassword(newPassword);
-            traineeDao.update(trainee);
+            traineeRepository.save(trainee); // Usar save para actualizar el trainee en la base de datos
         } else {
             throw new IllegalArgumentException("Trainee with ID " + traineeId + " not found.");
         }
     }
 
     public void updateTraineeProfile(Long traineeId, Trainee updatedTrainee) {
-        Trainee existingTrainee = traineeDao.findById(traineeId);
-        if (existingTrainee != null) {
+        Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
+        if (traineeOptional.isPresent()) {
+            Trainee existingTrainee = traineeOptional.get();
             existingTrainee.setDateOfBirth(updatedTrainee.getDateOfBirth());
             existingTrainee.setAddress(updatedTrainee.getAddress());
             existingTrainee.setUser(updatedTrainee.getUser());
-            traineeDao.update(existingTrainee);
+            traineeRepository.save(existingTrainee); // Usa save para actualizar el trainee en la base de datos
         } else {
             throw new IllegalArgumentException("Trainee with ID " + traineeId + " not found.");
         }
     }
 
     public void activateTrainee(Long traineeId) {
-        Trainee trainee = traineeDao.findById(traineeId);
-        if (trainee != null) {
+        Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
+        if (traineeOptional.isPresent()) {
+            Trainee trainee = traineeOptional.get();
             trainee.getUser().setActive(true);
-            traineeDao.update(trainee);
+            traineeRepository.save(trainee); // Utiliza save para actualizar el trainee en la base de datos
         } else {
             throw new IllegalArgumentException("Trainee with ID " + traineeId + " not found.");
         }
     }
 
     public void deactivateTrainee(Long traineeId) {
-        Trainee trainee = traineeDao.findById(traineeId);
-        if (trainee != null) {
+        Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
+        if (traineeOptional.isPresent()) {
+            Trainee trainee = traineeOptional.get();
             trainee.getUser().setActive(false);
-            traineeDao.update(trainee);
+            traineeRepository.save(trainee); // Utiliza save para actualizar el trainee en la base de datos
         } else {
             throw new IllegalArgumentException("Trainee with ID " + traineeId + " not found.");
         }
     }
 
     public void deleteTraineeByUsername(String userName) {
-        Trainee trainee = traineeDao.findByUserName(userName);
-        if (trainee != null) {
-            traineeDao.delete(trainee.getId());
+        Optional<Trainee> traineeOptional = traineeRepository.findByUserName(userName);
+        if (traineeOptional.isPresent()) {
+            traineeRepository.delete(traineeOptional.get());
         } else {
             throw new IllegalArgumentException("Trainee with username " + userName + " not found.");
         }
     }
 
     public List<Training> getTrainingsByUsernameAndCriteria(String userName, LocalDate fromDate, LocalDate toDate, String trainerName, String trainingType) {
-        Trainee trainee = traineeDao.findByUserName(userName);
+        Optional<Trainee> traineeOptional = traineeRepository.findByUserName(userName);
 
-        if (trainee == null) {
-            throw new IllegalArgumentException("Trainee with username " + userName + " not found.");
-        }
+        Trainee trainee = traineeOptional.orElseThrow(() -> new IllegalArgumentException("Trainee with username " + userName + " not found."));
 
         List<Training> trainings = trainee.getTrainings();
 
@@ -134,36 +144,39 @@ public class TraineeService {
                 .collect(Collectors.toList());
     }
 
+
     private boolean isMatchingTrainer(Training training, String trainerName) {
         Trainer trainer = training.getTrainer();
         if (trainer != null) {
-            // Check if trainer's full name matches the provided name
             return trainer.getUser().getUserName().equals(trainerName);
         }
         return false;
     }
 
     public Trainee updateTraineeTrainers(Long traineeId, List<Trainer> updatedTrainers) {
-        Trainee trainee = traineeDao.findById(traineeId);
+        Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
 
-        if (trainee == null) {
+        if (traineeOptional.isPresent()) {
+            Trainee trainee = traineeOptional.get();
+
+            // Obtener todos los entrenamientos del trainee
+            List<Training> trainings = trainee.getTrainings();
+
+            // Actualizar los entrenamientos con los nuevos entrenadores
+            for (Training training : trainings) {
+                training.setTrainer((Trainer) updatedTrainers); // Actualiza el entrenador del entrenamiento
+            }
+
+            // Guardar los cambios en los entrenamientos en la base de datos
+            for (Training training : trainings) {
+                trainingRepository.save(training); // Guarda el entrenamiento actualizado
+            }
+
+            return trainee;
+        } else {
             throw new IllegalArgumentException("Trainee with ID " + traineeId + " not found.");
         }
-
-        // Obtener todos los entrenamientos del trainee
-        List<Training> trainings = trainee.getTrainings();
-
-        // Actualizar los entrenamientos con los nuevos entrenadores
-        for (Training training : trainings) {
-            training.setTrainer((Trainer) updatedTrainers); // Actualiza el entrenador del entrenamiento
-        }
-
-        // Guardar los cambios en los entrenamientos en la base de datos
-        for (Training training : trainings) {
-            trainingDao.update(training); // Guarda el entrenamiento actualizado
-        }
-
-        return trainee;
     }
+
 
 }

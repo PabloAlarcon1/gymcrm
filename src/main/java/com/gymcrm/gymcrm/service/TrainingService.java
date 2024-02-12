@@ -1,50 +1,53 @@
 package com.gymcrm.gymcrm.service;
 
-import com.gymcrm.gymcrm.dao.TraineeDao;
-import com.gymcrm.gymcrm.dao.TrainerDao;
-import com.gymcrm.gymcrm.dao.TrainingDao;
 import com.gymcrm.gymcrm.gymcrm.model.Trainee;
 import com.gymcrm.gymcrm.gymcrm.model.Trainer;
 import com.gymcrm.gymcrm.gymcrm.model.Training;
+import com.gymcrm.gymcrm.repository.TraineeRepository;
+import com.gymcrm.gymcrm.repository.TrainerRepository;
+import com.gymcrm.gymcrm.repository.TrainingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class TrainingService {
 
-    private final TrainingDao trainingDao;
-    private final TraineeDao traineeDao;
+    private final TrainingRepository trainingRepository;
+    private final TraineeRepository traineeRepository;
 
-    private final TrainerDao trainerDao;
+    private final TrainerRepository trainerRepository;
 
     @Autowired
-    public TrainingService(TrainingDao trainingDao, TraineeDao traineeDao, TrainerDao trainerDao) {
-        this.trainingDao = trainingDao;
-        this.traineeDao = traineeDao;
-        this.trainerDao = trainerDao;
+    public TrainingService(TrainingRepository trainingRepository, TraineeRepository traineeRepository, TrainerRepository trainerRepository) {
+        this.trainingRepository = trainingRepository;
+        this.traineeRepository = traineeRepository;
+        this.trainerRepository = trainerRepository;
     }
 
     public Training saveTraining(Training training) {
-        return trainingDao.save(training);
+        return trainingRepository.save(training);
     }
 
     public Training getTrainingById(Long id) {
-        return trainingDao.findById(id);
+        Optional<Training> optionalTraining = trainingRepository.findById(id);
+        return optionalTraining.orElse(null); // Devuelve el objeto Training si está presente, o null si no lo está
     }
 
     public List<Training> getAllTrainings() {
-        return trainingDao.findAll();
+        return trainingRepository.findAll();
     }
 
     public Training updateTraining(Training training) {
-        return trainingDao.update(training);
+        return trainingRepository.save(training);
     }
 
     public void deleteTraining(Long id) {
-        trainingDao.delete(id);
+        Optional<Training> optionalTraining = trainingRepository.findById(id);
+        optionalTraining.ifPresent(training -> trainingRepository.delete(training));
     }
 
     public Training addTraining(Training training) {
@@ -61,23 +64,20 @@ public class TrainingService {
             throw new IllegalArgumentException("Training date cannot be null");
         }
 
-        return trainingDao.save(training);
+        return trainingRepository.save(training);
     }
 
     public List<Training> findTrainingsByTrainerAndTrainee(Trainer trainer, Trainee trainee) {
-        return trainingDao.findTrainingsByTrainerAndTrainee(trainer, trainee);
+        return trainingRepository.findTrainingsByTrainerAndTrainee(trainer, trainee);
     }
 
     public List<Trainer> getUnassignedTrainersByTraineeUsername(String traineeUserName) {
         // Buscar el trainee por su nombre de usuario
-        Trainee trainee = traineeDao.findByUserName(traineeUserName);
-
-        if (trainee == null) {
-            throw new IllegalArgumentException("Trainee with username " + traineeUserName + " not found.");
-        }
+        Trainee trainee = traineeRepository.findByUserName(traineeUserName)
+                .orElseThrow(() -> new IllegalArgumentException("Trainee with username " + traineeUserName + " not found."));
 
         // Obtener todos los entrenadores
-        List<Trainer> allTrainers = trainerDao.findAll();
+        List<Trainer> allTrainers = trainerRepository.findAll();
 
         // Filtrar la lista de entrenadores para excluir aquellos que están asignados al trainee
         return allTrainers.stream()

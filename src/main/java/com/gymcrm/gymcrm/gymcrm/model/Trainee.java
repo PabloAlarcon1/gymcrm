@@ -1,8 +1,8 @@
 package com.gymcrm.gymcrm.gymcrm.model;
 
-import jakarta.persistence.*;
-
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,8 +23,8 @@ public class Trainee {
     @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
     private User user;
 
-    @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL)
-    private List<Training> trainings;
+    @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Training> trainings  = new ArrayList<>();;
 
 
 
@@ -33,26 +33,12 @@ public class Trainee {
     public Trainee() {
     }
 
-    public Trainee(Long id, LocalDate dateOfBirth, String address, User user) {
-        this.id = id;
-        this.dateOfBirth = dateOfBirth;
-        this.address = address;
-        this.user = user;
-    }
-
     public Trainee(LocalDate dateOfBirth, String address, User user) {
         this.dateOfBirth = dateOfBirth;
         this.address = address;
         this.user = user;
     }
 
-    public Trainee(Long id, LocalDate dateOfBirth, String address, User user, List<Training> trainings) {
-        this.id = id;
-        this.dateOfBirth = dateOfBirth;
-        this.address = address;
-        this.user = user;
-        this.trainings = trainings;
-    }
 
     // Getters y Setters
 
