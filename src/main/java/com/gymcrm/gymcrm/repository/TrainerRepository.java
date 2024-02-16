@@ -1,6 +1,6 @@
 package com.gymcrm.gymcrm.repository;
 
-import com.gymcrm.gymcrm.gymcrm.model.Trainer;
+import com.gymcrm.gymcrm.model.Trainer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.gymcrm.gymcrm.gymcrm.model;
+package com.gymcrm.gymcrm.model;
 
 
 import javax.persistence.*;

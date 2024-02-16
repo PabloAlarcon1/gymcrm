@@ -1,8 +1,8 @@
 package com.gymcrm.gymcrm.service;
 
-import com.gymcrm.gymcrm.gymcrm.model.Trainee;
-import com.gymcrm.gymcrm.gymcrm.model.Trainer;
-import com.gymcrm.gymcrm.gymcrm.model.Training;
+import com.gymcrm.gymcrm.model.Trainee;
+import com.gymcrm.gymcrm.model.Trainer;
+import com.gymcrm.gymcrm.model.Training;
 import com.gymcrm.gymcrm.repository.TraineeRepository;
 import com.gymcrm.gymcrm.repository.TrainingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
