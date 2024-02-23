@@ -1,7 +1,7 @@
 package com.gymcrm.gymcrm.model;
 
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "SPECIALIZATION")
