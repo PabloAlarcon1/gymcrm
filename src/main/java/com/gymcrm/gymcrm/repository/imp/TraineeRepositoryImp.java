@@ -25,7 +25,7 @@ public abstract class TraineeRepositoryImp implements TraineeRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    private Map<String, Trainee> trainerDatabase;
+    private Map<String, Trainee> traineeDatabase;
 
 
     @Override
@@ -38,7 +38,7 @@ public abstract class TraineeRepositoryImp implements TraineeRepository {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Trainee> cr = cb.createQuery(Trainee.class);
         Root<Trainee> root = cr.from(Trainee.class);
-        cr.select(root).where(cb.equal(root.get("udedId"), String.valueOf(id)));
+        cr.select(root).where(cb.equal(root.get("userId"), String.valueOf(id)));
         Query query = entityManager.createQuery(cr);
         List<Trainee> results = query.getResultList();
         return results.isEmpty()? Optional.empty() : Optional.ofNullable(results.get(0));
@@ -67,6 +67,11 @@ public abstract class TraineeRepositoryImp implements TraineeRepository {
         Query query = entityManager.createQuery(cr);
         List<Trainee> results = query.getResultList();
         return results;
+    }
+
+    @Override
+    public void delete(Integer id) {
+        traineeDatabase.remove(id);
     }
 
 

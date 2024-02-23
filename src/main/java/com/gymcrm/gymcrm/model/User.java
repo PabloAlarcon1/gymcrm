@@ -1,14 +1,16 @@
 package com.gymcrm.gymcrm.model;
 
 import jakarta.persistence.*;
+import lombok.Setter;
 
 @Entity
 @Table(name = "USER")
 public class User {
 
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "FIRST_NAME", nullable = false)
     private String firstName;
@@ -34,7 +36,7 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String firstName, String lastName, String userName, String password, Boolean isActive) {
+    public User(Integer id, String firstName, String lastName, String userName, String password, Boolean isActive) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -56,12 +58,8 @@ public class User {
 
     // Getters y Setters
 
-    public Long getId() {
+    public Integer getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getFirstName() {

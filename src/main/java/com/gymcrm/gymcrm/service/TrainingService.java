@@ -32,7 +32,7 @@ public class TrainingService {
         return trainingRepository.save(training);
     }
 
-    public Training getTrainingById(Long id) {
+    public Training getTrainingById(Integer id) {
         Optional<Training> optionalTraining = trainingRepository.findById(id);
         return optionalTraining.orElse(null); // Devuelve el objeto Training si está presente, o null si no lo está
     }
@@ -45,7 +45,7 @@ public class TrainingService {
         return trainingRepository.save(training);
     }
 
-    public void deleteTraining(Long id) {
+    public void deleteTraining(Integer id) {
         Optional<Training> optionalTraining = trainingRepository.findById(id);
         optionalTraining.ifPresent(training -> trainingRepository.delete(training));
     }

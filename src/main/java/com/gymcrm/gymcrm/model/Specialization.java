@@ -11,7 +11,7 @@ public class Specialization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
-    private Long id;
+    private Integer id;
 
 
     @Column(name = "NAME", nullable = false)
@@ -25,7 +25,7 @@ public class Specialization {
     public Specialization() {
     }
 
-    public Specialization(Long id, String name) {
+    public Specialization(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -39,11 +39,11 @@ public class Specialization {
 
     // Getters y Setters
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -39,7 +39,7 @@ public abstract class TrainerRepositoryImp implements TrainerRepository {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Trainer> cr = cb.createQuery(Trainer.class);
         Root<Trainer> root = cr.from(Trainer.class);
-        cr.select(root).where(cb.equal(root.get("udedId"), String.valueOf(id)));
+        cr.select(root).where(cb.equal(root.get("userId"), String.valueOf(id)));
         Query query = entityManager.createQuery(cr);
         List<Trainer> results = query.getResultList();
         return results.isEmpty()? Optional.empty() : Optional.ofNullable(results.get(0));

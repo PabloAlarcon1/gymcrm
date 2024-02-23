@@ -1,5 +1,6 @@
 package com.gymcrm.gymcrm.service;
 
+import com.gymcrm.gymcrm.exception.DuplicatedResourceException;
 import com.gymcrm.gymcrm.model.Trainee;
 import com.gymcrm.gymcrm.model.Trainer;
 import com.gymcrm.gymcrm.model.Training;
@@ -26,6 +27,16 @@ public class TraineeService {
     public TraineeService(TraineeRepository traineeRepository, TrainingRepository trainingRepository) {
         this.traineeRepository = traineeRepository;
         this.trainingRepository = trainingRepository;
+    }
+
+    public void create(Trainee trainee) {
+        log.info("Request received to create trainer");
+        if (trainee.getId() != null && traineeRepository.getTrainee(trainee.getId()).isPresent()) {
+            log.info("Trainee with supplied id already exist, throwing exception");
+            throw DuplicatedResourceException.builder().detailMessage("Trainee with id already exist").build();
+        }
+        traineeRepository.create(trainee);
+        log.info("Trainee created successfully");
     }
 
     public Trainee saveTrainee(Trainee trainee) {
@@ -170,8 +181,8 @@ public class TraineeService {
         return false;
     }
 
-    public Trainee updateTraineeTrainers(Long traineeId, List<Trainer> updatedTrainers) {
-        Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
+    public Trainee updateTraineeTrainers(Integer traineeId, List<Trainer> updatedTrainers) {
+        Optional<Trainee> traineeOptional = traineeRepository.getTrainee(traineeId);
 
         if (traineeOptional.isPresent()) {
             Trainee trainee = traineeOptional.get();
