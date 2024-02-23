@@ -8,7 +8,7 @@ public class TrainingType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "TRAINING_TYPE_NAME", nullable = false)
     private String trainingTypeName;
@@ -21,7 +21,7 @@ public class TrainingType {
     public TrainingType() {
     }
 
-    public TrainingType(Long id, String trainingTypeName) {
+    public TrainingType(Integer id, String trainingTypeName) {
         this.id = id;
         this.trainingTypeName = trainingTypeName;
     }
@@ -35,11 +35,11 @@ public class TrainingType {
 
     // Getters y Setters
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

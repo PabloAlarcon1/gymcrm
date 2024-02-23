@@ -11,7 +11,7 @@ public class Trainee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "DATE_OF_BIRTH")
     private LocalDate dateOfBirth;
@@ -42,11 +42,11 @@ public class Trainee {
 
     // Getters y Setters
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

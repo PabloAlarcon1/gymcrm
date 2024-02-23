@@ -1,17 +1,21 @@
 package com.gymcrm.gymcrm.repository;
 
 import com.gymcrm.gymcrm.model.Trainer;
-import com.gymcrm.gymcrm.model.Training;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-public interface TrainerRepository extends JpaRepository<Training, Long> {
+public interface TrainerRepository extends JpaRepository<Trainer, Integer> {
 
     void create(Trainer trainer);
     Optional<Trainer> get(Integer id);
     void update(Trainer trainer);
-    void delete(Trainer id);
-    Optional<Trainer> findByUserName(String userName);
-    boolean existsByUsername(String userName);
+    void delete(Integer id);
+    Optional<Trainer> findByUserUserName(String userName);
+    boolean existsByUserUserName(String userName);
+    List<Trainer> getByCriteria(Map<String, String> criterias);
+
+
 }

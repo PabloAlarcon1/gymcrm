@@ -10,7 +10,7 @@ public class Training {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @ManyToOne
     @JoinColumn(name = "TRAINEE:ID")
@@ -42,7 +42,7 @@ public class Training {
     public Training() {
     }
 
-    public Training(Long id, Trainee trainee, Trainer trainer, TrainingType trainingType, String trainingName, LocalDate trainingDate, Integer trainingDuration) {
+    public Training(Integer id, Trainee trainee, Trainer trainer, TrainingType trainingType, String trainingName, LocalDate trainingDate, Integer trainingDuration) {
         this.id = id;
         this.trainee = trainee;
         this.trainer = trainer;
@@ -63,11 +63,11 @@ public class Training {
 
     // Getters y Setters
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

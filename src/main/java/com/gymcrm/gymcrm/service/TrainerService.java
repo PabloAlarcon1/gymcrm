@@ -1,19 +1,25 @@
 package com.gymcrm.gymcrm.service;
 
+import com.gymcrm.gymcrm.exception.DuplicatedResourceException;
+import com.gymcrm.gymcrm.exception.ResourceNotFoundException;
 import com.gymcrm.gymcrm.model.Trainee;
 import com.gymcrm.gymcrm.model.Trainer;
 import com.gymcrm.gymcrm.model.Training;
 import com.gymcrm.gymcrm.repository.TrainerRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class TrainerService {
+    public static final String TRAINER_NOT_FOUND = "Trainer not found";
 
     private final TrainerRepository trainerRepository;
 
@@ -23,72 +29,88 @@ public class TrainerService {
         this.trainerRepository = trainerRepository;
     }
 
+    public void create(Trainer trainer) {
+        log.info("Request received to create trainer");
+        if (trainer.getId() != null && trainerRepository.get(trainer.getId()).isPresent()) {
+            log.info("Trainer with supplied id already exist, throwing exception");
+            throw DuplicatedResourceException.builder().detailMessage("Trainer with id already exist").build();
+        }
+        trainerRepository.create(trainer);
+        log.info("Trainer created successfully");
+    }
+
     public Trainer saveTrainer(Trainer trainer) {
-        if (trainerRepository.existsByUsername(trainer.getUser().getUserName())) {
+        if (trainerRepository.existsByUserUserName(trainer.getUser().getUserName())) {
             throw new IllegalArgumentException("Trainer with the same username already exists.");
         }
         return trainerRepository.save(trainer);
     }
 
-    public Trainer getTrainerById(Long id) {
-        Optional<Trainer> optionalTrainer = trainerRepository.findById(id);
-        if (optionalTrainer.isPresent()) {
-            return optionalTrainer.get();
-        } else {
-            throw new IllegalArgumentException("Trainer with ID " + id + " not found.");
-        }
+    public Trainer get(Integer id) {
+        log.info("Request received to retrieve trainer");
+        Trainer trainer = trainerRepository.get(id).orElseThrow(() -> {
+            log.info("Trainer not found");
+            return ResourceNotFoundException.builder().detailMessage(TRAINER_NOT_FOUND).build();
+        });
+        log.info("Trainer found successfully");
+        return trainer;
     }
 
     public List<Trainer> getAllTrainers() {
         return trainerRepository.findAll();
     }
 
-    public Trainer updateTrainer(Trainer trainer) {
-        return trainerRepository.save(trainer);
+
+    public void update(Trainer trainer) {
+        log.info("Request received to retrieve trainer");
+        Optional<Trainer> trainerBD = trainerRepository.get(trainer.getId());
+        if (!trainerBD.isPresent()) {
+            throw ResourceNotFoundException.builder().detailMessage(TRAINER_NOT_FOUND).build();
+        }
+        log.info("Trainer found successfully");
     }
 
-    public void deleteTrainer(Long id) {
-        Optional<Trainer> optionalTrainer = trainerRepository.findById(id);
-        if (optionalTrainer.isPresent()) {
-            Trainer trainer = optionalTrainer.get();
-            trainerRepository.delete(trainer);
-        } else {
-            throw new IllegalArgumentException("Trainer with ID " + id + " not found.");
-        }
+    public void deleteTrainer(Integer id) {
+        log.info("Request received to delete trainer");
+        trainerRepository.delete(id);
+        log.info("Trainer deleted successfully");
     }
 
     public boolean verifyCredentials(String userName, String password) {
-        Optional<Trainer> optionalTrainer = trainerRepository.findByUserName(userName);
+        Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(userName);
 
         // Verificar si se encontró un Trainer
         if (optionalTrainer.isPresent()) {
             Trainer trainer = optionalTrainer.get();
             // Comparar la contraseña proporcionada con la contraseña almacenada en el Trainer
+            log.info("Verified credentials");
             return trainer.getUser().getPassword().equals(password);
         } else {
+            log.info("Credentials do not match");
             // Si no se encuentra el Trainer, las credenciales no coinciden
             return false;
         }
     }
 
     public Trainer getTrainerByUsername(String userName) {
-        Optional<Trainer> optionalTrainer = trainerRepository.findByUserName(userName);
+        Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(userName);
 
         return optionalTrainer.orElseThrow(() -> new IllegalArgumentException("Trainer with username " + userName + " not found."));
     }
 
-    public void changePassword(Long trainerId, String newPassword) {
+    public void changePassword(Integer trainerId, String newPassword) {
         Optional<Trainer> optionalTrainer = trainerRepository.findById(trainerId);
         if (optionalTrainer.isPresent()) {
             Trainer trainer = optionalTrainer.get();
             trainer.getUser().setPassword(newPassword);
             trainerRepository.save(trainer);
+            log.info("Password changed successfully");
         } else {
             throw new IllegalArgumentException("Trainer with ID " + trainerId + " not found.");
         }
     }
 
-    public void updateTrainerProfile(Long trainerId, Trainer updatedTrainer) {
+    public void updateTrainerProfile(Integer trainerId, Trainer updatedTrainer) {
         Optional<Trainer> existingTrainerOptional = trainerRepository.findById(trainerId);
         if (existingTrainerOptional.isPresent()) {
             Trainer existingTrainer = existingTrainerOptional.get();
@@ -96,35 +118,38 @@ public class TrainerService {
             existingTrainer.setSpecialization(updatedTrainer.getSpecialization());
             existingTrainer.setUser(updatedTrainer.getUser());
             trainerRepository.save(existingTrainer); // Guardar los cambios en la base de datos
+            log.info("Trainer profile updated successfully");
         } else {
             throw new IllegalArgumentException("Trainer with ID " + trainerId + " not found.");
         }
     }
 
-    public void activateTrainer(Long trainerId) {
+    public void activateTrainer(Integer trainerId) {
         Optional<Trainer> trainerOptional = trainerRepository.findById(trainerId);
         if (trainerOptional.isPresent()) {
             Trainer trainer = trainerOptional.get();
             trainer.getUser().setActive(true);
             trainerRepository.save(trainer); // Guardar los cambios en la base de datos
+            log.info("Trainer activated successfully");
         } else {
             throw new IllegalArgumentException("Trainer with ID " + trainerId + " not found.");
         }
     }
 
-    public void deactivateTrainer(Long trainerId) {
+    public void deactivateTrainer(Integer trainerId) {
         Optional<Trainer> trainerOptional = trainerRepository.findById(trainerId);
         if (trainerOptional.isPresent()) {
             Trainer trainer = trainerOptional.get();
             trainer.getUser().setActive(false);
             trainerRepository.save(trainer); // Guarda los cambios en la base de datos
+            log.info("Trainer deactivated successfully");
         } else {
             throw new IllegalArgumentException("Trainer with ID " + trainerId + " not found.");
         }
     }
 
     public List<Training> getTrainerTrainingsByUsernameAndCriteria(String userName, LocalDate fromDate, LocalDate toDate, String traineeName) {
-        Optional<Trainer> trainerOptional = trainerRepository.findByUserName(userName);
+        Optional<Trainer> trainerOptional = trainerRepository.findByUserUserName(userName);
 
         if (trainerOptional.isPresent()) {
             Trainer trainer = trainerOptional.get();
@@ -141,6 +166,11 @@ public class TrainerService {
         }
     }
 
+
+    public List<Trainer> getTrainerByCriteria(Map<String, String> criterias) {
+        return trainerRepository.getByCriteria(criterias);
+    }
+
     private boolean isMatchingTrainee(Training training, String traineeName) {
         Trainee trainee = training.getTrainee();
         if (trainee != null) {
@@ -149,5 +179,6 @@ public class TrainerService {
         }
         return false;
     }
+
 
 }

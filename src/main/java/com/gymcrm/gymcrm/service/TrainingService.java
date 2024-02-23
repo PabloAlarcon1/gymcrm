@@ -73,7 +73,7 @@ public class TrainingService {
 
     public List<Trainer> getUnassignedTrainersByTraineeUsername(String traineeUserName) {
         // Buscar el trainee por su nombre de usuario
-        Trainee trainee = traineeRepository.findByUserName(traineeUserName)
+        Trainee trainee = traineeRepository.findByUserUserName(traineeUserName)
                 .orElseThrow(() -> new IllegalArgumentException("Trainee with username " + traineeUserName + " not found."));
 
         // Obtener todos los entrenadores
