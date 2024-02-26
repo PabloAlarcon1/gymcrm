@@ -31,11 +31,11 @@ public class TraineeService {
 
     public void create(Trainee trainee) {
         log.info("Request received to create trainer");
-        if (trainee.getId() != null && traineeRepository.getTrainee(trainee.getId()).isPresent()) {
+        if (trainee.getId() != null && traineeRepository.findById(trainee.getId()).isPresent()) {
             log.info("Trainee with supplied id already exist, throwing exception");
             throw DuplicatedResourceException.builder().detailMessage("Trainee with id already exist").build();
         }
-        traineeRepository.create(trainee);
+        traineeRepository.save(trainee);
         log.info("Trainee created successfully");
     }
 
@@ -47,7 +47,7 @@ public class TraineeService {
         return traineeRepository.save(trainee);
     }
 
-    public Trainee getTraineeById(Long id) {
+    public Trainee getTraineeById(Integer id) {
         log.info("Trainee found successfully");
         return traineeRepository.findById(id).orElse(null);
     }
@@ -62,7 +62,7 @@ public class TraineeService {
         return traineeRepository.save(trainee);
     }
 
-    public void deleteTrainee(Long id) {
+    public void deleteTrainee(Integer id) {
         Trainee traineeToDelete = traineeRepository.findById(id).orElse(null);
         if (traineeToDelete != null) {
             traineeRepository.delete(traineeToDelete);
@@ -97,7 +97,7 @@ public class TraineeService {
         }
     }
 
-    public void changePassword(Long traineeId, String newPassword) {
+    public void changePassword(Integer traineeId, String newPassword) {
         Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
         if (traineeOptional.isPresent()) {
             Trainee trainee = traineeOptional.get();
@@ -109,7 +109,7 @@ public class TraineeService {
         }
     }
 
-    public void updateTraineeProfile(Long traineeId, Trainee updatedTrainee) {
+    public void updateTraineeProfile(Integer traineeId, Trainee updatedTrainee) {
         Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
         if (traineeOptional.isPresent()) {
             Trainee existingTrainee = traineeOptional.get();
@@ -123,7 +123,7 @@ public class TraineeService {
         }
     }
 
-    public void activateTrainee(Long traineeId) {
+    public void activateTrainee(Integer traineeId) {
         Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
         if (traineeOptional.isPresent()) {
             Trainee trainee = traineeOptional.get();
@@ -135,7 +135,7 @@ public class TraineeService {
         }
     }
 
-    public void deactivateTrainee(Long traineeId) {
+    public void deactivateTrainee(Integer traineeId) {
         Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
         if (traineeOptional.isPresent()) {
             Trainee trainee = traineeOptional.get();
@@ -182,7 +182,7 @@ public class TraineeService {
     }
 
     public Trainee updateTraineeTrainers(Integer traineeId, List<Trainer> updatedTrainers) {
-        Optional<Trainee> traineeOptional = traineeRepository.getTrainee(traineeId);
+        Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
 
         if (traineeOptional.isPresent()) {
             Trainee trainee = traineeOptional.get();
