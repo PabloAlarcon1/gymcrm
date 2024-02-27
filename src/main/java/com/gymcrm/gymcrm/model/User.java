@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Setter;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "USUARIO")
 public class User {
 
     @Setter

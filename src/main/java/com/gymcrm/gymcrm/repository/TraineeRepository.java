@@ -16,10 +16,6 @@ import java.util.Optional;
 public interface TraineeRepository extends JpaRepository<Trainee, Integer>, JpaSpecificationExecutor<Trainee> {
 
 
-    //Optional<Trainee> findByUserUserName(String userName);
-    //boolean existsByUserUserName(String userName);
-
-
     @Query("SELECT t FROM Trainee t WHERE t.user.userName = :userName")
     Optional<Trainee> findByUserUserName(@Param("userName") String userName);
 

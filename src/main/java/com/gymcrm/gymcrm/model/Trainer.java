@@ -17,7 +17,7 @@ public class Trainer {
     private Specialization specialization;
 
     @OneToOne
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "USUARIO_ID", referencedColumnName = "ID")
     private User user;
 
     @OneToMany(mappedBy = "trainer")

@@ -20,7 +20,7 @@ public class Trainee {
     private String address;
 
     @OneToOne
-    @JoinColumn(name = "USER_ID", referencedColumnName = "ID")
+    @JoinColumn(name = "USUARIO_ID", referencedColumnName = "ID")
     private User user;
 
     @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL, orphanRemoval = true)
