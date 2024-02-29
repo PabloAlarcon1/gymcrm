@@ -19,5 +19,10 @@ public interface TrainerRepository extends JpaRepository<Trainer, Integer>, JpaS
     @Query("SELECT t FROM Trainer t WHERE t.specialization.name = :specializationName")
     List<Trainer> getByCriteria(@Param("specializationName") String specializationName);
 
+    List<Trainer> findAllByUserIsActiveTrue();
+
+    @Query("SELECT t FROM Trainer t WHERE t.user.userName IN :userNames")
+    List<Trainer> findAllByUserNameIn(@Param("userNames") List<String> userNames);
+
 
 }

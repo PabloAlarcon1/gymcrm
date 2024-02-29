@@ -24,7 +24,15 @@ public class Trainee {
     private User user;
 
     @OneToMany(mappedBy = "trainee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Training> trainings  = new ArrayList<>();;
+    private List<Training> trainings  = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(
+            name = "trainee_trainer",
+            joinColumns = @JoinColumn(name = "trainee_id"),
+            inverseJoinColumns = @JoinColumn(name = "trainer_id")
+    )
+    private List<Trainer> trainers = new ArrayList<>();
 
 
 
@@ -84,5 +92,13 @@ public class Trainee {
 
     public void addTraining(Training training) {
         trainings.add(training);
+    }
+
+    public List<Trainer> getTrainers() {
+        return trainers;
+    }
+
+    public void setTrainers(List<Trainer> trainers) {
+        this.trainers = trainers;
     }
 }

@@ -1,9 +1,12 @@
 package com.gymcrm.gymcrm.exception;
 
-import lombok.Builder;
-
-@Builder
 public class ResourceNotFoundException extends RuntimeException{
 
-    private String detailMessage;
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+
+    public ResourceNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

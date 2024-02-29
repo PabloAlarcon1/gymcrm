@@ -1,11 +1,11 @@
 package com.gymcrm.gymcrm.service;
 
 import com.gymcrm.gymcrm.exception.DuplicatedResourceException;
-import com.gymcrm.gymcrm.model.Trainee;
-import com.gymcrm.gymcrm.model.Trainer;
-import com.gymcrm.gymcrm.model.Training;
+import com.gymcrm.gymcrm.model.*;
 import com.gymcrm.gymcrm.repository.TraineeRepository;
+import com.gymcrm.gymcrm.repository.TrainerRepository;
 import com.gymcrm.gymcrm.repository.TrainingRepository;
+import com.gymcrm.gymcrm.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,11 +22,15 @@ public class TraineeService {
 
     private final TraineeRepository traineeRepository;
     private final TrainingRepository trainingRepository;
+    private final TrainerRepository trainerRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public TraineeService(TraineeRepository traineeRepository, TrainingRepository trainingRepository) {
+    public TraineeService(TraineeRepository traineeRepository, TrainingRepository trainingRepository, TrainerRepository trainerRepository, UserRepository userRepository) {
         this.traineeRepository = traineeRepository;
         this.trainingRepository = trainingRepository;
+        this.trainerRepository = trainerRepository;
+        this.userRepository = userRepository;
     }
 
     public void create(Trainee trainee) {
@@ -37,6 +41,14 @@ public class TraineeService {
         }
         traineeRepository.save(trainee);
         log.info("Trainee created successfully");
+    }
+
+    public User saveUser(User user) {
+        if (traineeRepository.existsByUserUserName(user.getUserName())) {
+            throw new IllegalArgumentException("User with the same username already exists.");
+        }
+        log.info("User saved successfully");
+        return user;
     }
 
     public Trainee saveTrainee(Trainee trainee) {
@@ -97,15 +109,15 @@ public class TraineeService {
         }
     }
 
-    public void changePassword(Integer traineeId, String newPassword) {
-        Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
+    public void changePassword(String username, String newPassword) {
+        Optional<Trainee> traineeOptional = traineeRepository.findByUserUserName(username);
         if (traineeOptional.isPresent()) {
             Trainee trainee = traineeOptional.get();
             trainee.getUser().setPassword(newPassword);
             traineeRepository.save(trainee);
             log.info("Password changed successfully");
         } else {
-            throw new IllegalArgumentException("Trainee with ID " + traineeId + " not found.");
+            throw new IllegalArgumentException("Trainee with username " + username + " not found.");
         }
     }
 
@@ -134,6 +146,18 @@ public class TraineeService {
             throw new IllegalArgumentException("Trainee with ID " + traineeId + " not found.");
         }
     }
+    public void activateTraineeByUsername(String userName, boolean isActive) {
+        Trainee trainee = getTraineeByUsername(userName);
+        trainee.getUser().setActive(isActive);
+        traineeRepository.save(trainee);
+        log.info("Trainee '{}' {} successfully", userName, isActive ? "activated" : "deactivated");
+    }
+    public void deactivateTraineeByUsername(String userName, boolean isActive) {
+        Trainee trainee = getTraineeByUsername(userName);
+        trainee.getUser().setActive(isActive);
+        traineeRepository.save(trainee);
+        log.info("Trainee '{}' {} successfully", userName, isActive ? "activated" : "deactivated");
+    }
 
     public void deactivateTrainee(Integer traineeId) {
         Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
@@ -158,57 +182,69 @@ public class TraineeService {
     }
 
     public List<Training> getTrainingsByUsernameAndCriteria(String userName, LocalDate fromDate, LocalDate toDate, String trainerName, String trainingType) {
-        Optional<Trainee> traineeOptional = traineeRepository.findByUserUserName(userName);
+        // Obtener el trainee por nombre de usuario
+        Trainee trainee = getTraineeByUsername(userName);
 
-        Trainee trainee = traineeOptional.orElseThrow(() -> new IllegalArgumentException("Trainee with username " + userName + " not found."));
-
+        // Obtener todos los entrenamientos del trainee
         List<Training> trainings = trainee.getTrainings();
 
+        // Filtrar los entrenamientos según los criterios proporcionados
         return trainings.stream()
-                .filter(training -> fromDate == null || training.getTrainingDate().isAfter(fromDate))
-                .filter(training -> toDate == null || training.getTrainingDate().isBefore(toDate))
-                .filter(training -> trainerName == null || isMatchingTrainer(training, trainerName))
-                .filter(training -> trainingType == null || training.getTrainingType().getTrainingTypeName().equals(trainingType))
+                .filter(training -> isTrainingWithinDateRange(training, fromDate, toDate))
+                .filter(training -> isMatchingTrainer(training, trainerName))
+                .filter(training -> isMatchingTrainingType(training, trainingType))
                 .collect(Collectors.toList());
     }
 
+    private boolean isTrainingWithinDateRange(Training training, LocalDate fromDate, LocalDate toDate) {
+        LocalDate trainingDate = training.getTrainingDate();
+        return (fromDate == null || trainingDate.isAfter(fromDate)) &&
+                (toDate == null || trainingDate.isBefore(toDate));
+    }
 
     private boolean isMatchingTrainer(Training training, String trainerName) {
         Trainer trainer = training.getTrainer();
-        if (trainer != null) {
-            return trainer.getUser().getUserName().equals(trainerName);
-        }
-        return false;
+        return trainerName == null || trainer.getUser().getUserName().equals(trainerName);
     }
 
-    public Trainee updateTraineeTrainers(Integer traineeId, List<Trainer> updatedTrainers) {
-        Optional<Trainee> traineeOptional = traineeRepository.findById(traineeId);
-
-        if (traineeOptional.isPresent()) {
-            Trainee trainee = traineeOptional.get();
-
-            // Obtener todos los entrenamientos del trainee
-            List<Training> trainings = trainee.getTrainings();
-
-            // Actualizar los entrenamientos con los nuevos entrenadores
-            for (Training training : trainings) {
-                training.setTrainer((Trainer) updatedTrainers); // Actualiza el entrenador del entrenamiento
-            }
-
-            // Guardar los cambios en los entrenamientos en la base de datos
-            for (Training training : trainings) {
-                trainingRepository.save(training); // Guarda el entrenamiento actualizado
-            }
-
-            return trainee;
-        } else {
-            throw new IllegalArgumentException("Trainee with ID " + traineeId + " not found.");
-        }
+    private boolean isMatchingTrainingType(Training training, String trainingType) {
+        TrainingType type = training.getTrainingType();
+        return trainingType == null || type.getTrainingTypeName().equals(trainingType);
     }
+
+
+    public List<Trainer> updateTraineeTrainers(String traineeUserName, List<String> trainerUserNames) {
+        Trainee trainee = getTraineeByUsername(traineeUserName); // Obtener el trainee por su nombre de usuario
+        List<Trainer> trainers = trainerRepository.findAllByUserNameIn(trainerUserNames); // Obtener los entrenadores por sus nombres de usuario
+
+        trainee.setTrainers(trainers); // Establecer los nuevos entrenadores para el trainee
+        traineeRepository.save(trainee); // Guardar los cambios en el trainee
+
+        return trainers;
+    }
+
+
 
     public List<Trainee> getTraineeByCriteria(Map<String, String> criterias) {
         return traineeRepository.getByCriteria(criterias);
     }
+
+    public List<Trainer> getActiveUnassignedTrainers() {
+        // Obtener todos los entrenadores activos
+        List<Trainer> allActiveTrainers = trainerRepository.findAllByUserIsActiveTrue();
+
+        // Obtener todos los entrenadores asignados
+        List<Trainer> assignedTrainers = trainingRepository.findAll().stream()
+                .map(Training::getTrainer)
+                .collect(Collectors.toList());
+
+        // Filtrar los entrenadores activos que no están asignados
+        return allActiveTrainers.stream()
+                .filter(trainer -> !assignedTrainers.contains(trainer))
+                .collect(Collectors.toList());
+    }
+
+
 
 
 }

@@ -1,13 +1,12 @@
 package com.gymcrm.gymcrm.model;
 
 import jakarta.persistence.*;
-import lombok.Setter;
 
 @Entity
 @Table(name = "USUARIO")
 public class User {
 
-    @Setter
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -53,8 +52,10 @@ public class User {
         this.isActive = isActive;
     }
 
-
-
+    public User(String userName, String password) {
+        this.userName = userName;
+        this.password = password;
+    }
 
     // Getters y Setters
 

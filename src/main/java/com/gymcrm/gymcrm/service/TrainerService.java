@@ -48,12 +48,8 @@ public class TrainerService {
 
     public Trainer get(Integer id) {
         log.info("Request received to retrieve trainer");
-        Trainer trainer = trainerRepository.findById(id).orElseThrow(() -> {
-            log.info("Trainer not found");
-            return ResourceNotFoundException.builder().detailMessage(TRAINER_NOT_FOUND).build();
-        });
-        log.info("Trainer found successfully");
-        return trainer;
+        return trainerRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Trainer not found with id: " + id));
     }
 
     public List<Trainer> getAllTrainers() {
@@ -65,7 +61,7 @@ public class TrainerService {
         log.info("Request received to retrieve trainer");
         Optional<Trainer> trainerBD = trainerRepository.findById(trainer.getId());
         if (!trainerBD.isPresent()) {
-            throw ResourceNotFoundException.builder().detailMessage(TRAINER_NOT_FOUND).build();
+            throw new ResourceNotFoundException("Trainer not found with id: " + trainer.getId());
         }
         log.info("Trainer found successfully");
     }
@@ -98,15 +94,17 @@ public class TrainerService {
         return optionalTrainer.orElseThrow(() -> new IllegalArgumentException("Trainer with username " + userName + " not found."));
     }
 
-    public void changePassword(Integer trainerId, String newPassword) {
-        Optional<Trainer> optionalTrainer = trainerRepository.findById(trainerId);
-        if (optionalTrainer.isPresent()) {
-            Trainer trainer = optionalTrainer.get();
+
+
+    public void changePassword(String userName, String newPassword) {
+        Optional<Trainer> trainerOptional = trainerRepository.findByUserUserName(userName);
+        if (trainerOptional.isPresent()) {
+            Trainer trainer = trainerOptional.get();
             trainer.getUser().setPassword(newPassword);
             trainerRepository.save(trainer);
             log.info("Password changed successfully");
         } else {
-            throw new IllegalArgumentException("Trainer with ID " + trainerId + " not found.");
+            throw new IllegalArgumentException("Trainer with username " + userName + " not found.");
         }
     }
 
@@ -146,6 +144,20 @@ public class TrainerService {
         } else {
             throw new IllegalArgumentException("Trainer with ID " + trainerId + " not found.");
         }
+    }
+
+    public void activateTrainerByUsername(String userName, boolean isActive) {
+        Trainer trainer = getTrainerByUsername(userName);
+        trainer.getUser().setActive(isActive);
+        trainerRepository.save(trainer);
+        log.info("Trainer {} successfully activated/deactivated", userName);
+    }
+
+    public void deactivateTrainerByUsername(String userName, boolean isActive) {
+        Trainer trainer = getTrainerByUsername(userName);
+        trainer.getUser().setActive(isActive);
+        trainerRepository.save(trainer);
+        log.info("Trainer {} successfully activated/deactivated", userName);
     }
 
     public List<Training> getTrainerTrainingsByUsernameAndCriteria(String userName, LocalDate fromDate, LocalDate toDate, String traineeName) {
