@@ -6,8 +6,7 @@ import com.gymcrm.gymcrm.model.Training;
 import com.gymcrm.gymcrm.service.TraineeService;
 import com.gymcrm.gymcrm.service.TrainerService;
 import com.gymcrm.gymcrm.service.TrainingService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-@Api(tags = "Training Management")
 @RestController
 @RequestMapping("/trainings")
 public class TrainingController {
@@ -35,7 +33,7 @@ public class TrainingController {
         this.trainerService = trainerService;
     }
 
-    @ApiOperation(value = "Add a new training")
+    @Operation(summary = "Add a new training")
     @PostMapping("/trainings")
     public ResponseEntity<?> addTraining(@RequestBody TrainingRequest trainingRequest) {
         try {
@@ -115,7 +113,7 @@ public class TrainingController {
         }
     }
 
-    @ApiOperation(value = "Get training types")
+    @Operation(summary = "Get training types")
     @GetMapping
     public ResponseEntity<List<Map<String, Object>>> getTrainingTypes() {
         List<Training> trainingList = trainingService.getAllTrainings();

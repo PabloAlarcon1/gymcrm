@@ -2,8 +2,7 @@ package com.gymcrm.gymcrm.controller;
 
 import com.gymcrm.gymcrm.service.TraineeService;
 import com.gymcrm.gymcrm.service.TrainerService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Api(tags = "Authentication")
 @Slf4j
 @RestController
 public class LoginController {
@@ -27,7 +25,7 @@ public class LoginController {
         this.traineeService = traineeService;
     }
 
-    @ApiOperation(value = "Login with username and password")
+    @Operation(summary = "Login with username and password")
     @GetMapping("/login")
     public ResponseEntity<String> login(@RequestParam String username, @RequestParam String password) {
         try {
@@ -54,7 +52,7 @@ public class LoginController {
         }
     }
 
-    @ApiOperation(value = "Change password")
+    @Operation(summary = "Change password")
     @PutMapping("/change-password")
     public ResponseEntity<String> changePassword(@RequestParam String userName, @RequestParam String oldPassword, @RequestParam String newPassword) {
         try {

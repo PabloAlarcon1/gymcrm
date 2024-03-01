@@ -2,8 +2,7 @@ package com.gymcrm.gymcrm.controller;
 
 import com.gymcrm.gymcrm.model.Trainer;
 import com.gymcrm.gymcrm.service.TrainerService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Api(tags = "Trainer Management")
 @Slf4j
 @RestController
 @RequestMapping("/trainers")
@@ -28,7 +26,7 @@ public class TrainerController {
         this.trainerService = trainerService;
     }
 
-    @ApiOperation(value = "Register a new trainer")
+    @Operation(summary = "Register a new trainer")
     @PostMapping("/register")
     public ResponseEntity<String> registerTrainer(@RequestBody Trainer trainer) {
         try {
@@ -44,7 +42,7 @@ public class TrainerController {
         }
     }
 
-    @ApiOperation(value = "Get trainer profile by username")
+    @Operation(summary = "Get trainer profile by username")
     @GetMapping("/{userName}")
     public ResponseEntity<Map<String, Object>> getTrainerProfile(@PathVariable String userName) {
         Trainer trainer = trainerService.getTrainerByUsername(userName);
@@ -71,7 +69,7 @@ public class TrainerController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "Update trainer profile")
+    @Operation(summary = "Update trainer profile")
     @PutMapping("/{userName}")
     public ResponseEntity<String> updateTrainerProfile(@PathVariable String username, @RequestBody Trainer updatedTrainer) {
         try {
@@ -99,7 +97,7 @@ public class TrainerController {
         }
     }
 
-    @ApiOperation(value = "Activate trainer")
+    @Operation(summary = "Activate trainer")
     @PatchMapping("/{username}/activate")
     public ResponseEntity<?> activateTrainer(@PathVariable String username, @RequestParam boolean isActive) {
         try {
@@ -110,7 +108,7 @@ public class TrainerController {
         }
     }
 
-    @ApiOperation(value = "Deactivate trainer")
+    @Operation(summary = "Deactivate trainer")
     @PatchMapping("/{username}/deactivate")
     public ResponseEntity<?> deactivateTrainer(@PathVariable String username, @RequestParam boolean isActive) {
         try {

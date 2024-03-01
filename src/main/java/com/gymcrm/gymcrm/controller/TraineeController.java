@@ -7,8 +7,7 @@ import com.gymcrm.gymcrm.model.Trainer;
 import com.gymcrm.gymcrm.model.Training;
 import com.gymcrm.gymcrm.model.User;
 import com.gymcrm.gymcrm.service.TraineeService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Api(tags = "Trainee Management")
 @RestController
 @RequestMapping("/trainees")
 public class TraineeController {
@@ -36,7 +34,7 @@ public class TraineeController {
         this.traineeService = traineeService;
     }
 
-    @ApiOperation(value = "Register a new trainee")
+    @Operation(summary = "Register a new trainee")
     @PostMapping
     public ResponseEntity<Trainee> registerTrainee(@RequestBody TraineeRegistrationRequest request) {
         // Validar si los campos requeridos están presentes en la solicitud
@@ -93,7 +91,7 @@ public class TraineeController {
         }
     }
 
-    @ApiOperation(value = "Get trainee profile by username")
+    @Operation(summary = "Get trainee profile by username")
     @GetMapping("/profile")
     public ResponseEntity<?> getTraineeProfile(@RequestParam String userName) {
         try {
@@ -130,7 +128,7 @@ public class TraineeController {
         }
     }
 
-    @ApiOperation(value = "Update trainee profile by ID")
+    @Operation(summary = "Update trainee profile by ID")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateTraineeProfile(@PathVariable Integer id, @RequestBody TraineeUpdateRequest request) {
         try {
@@ -168,7 +166,7 @@ public class TraineeController {
 
     }
 
-    @ApiOperation(value = "Delete trainee profile by ID")
+    @Operation(summary = "Delete trainee profile by ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTraineeProfile(@PathVariable Integer id) {
         try {
@@ -179,14 +177,14 @@ public class TraineeController {
         }
     }
 
-    @ApiOperation(value = "Get active unassigned trainers")
+    @Operation(summary = "Get active unassigned trainers")
     @GetMapping("/unassigned-trainers")
     public ResponseEntity<List<Trainer>> getActiveUnassignedTrainers() {
         List<Trainer> unassignedTrainers = traineeService.getActiveUnassignedTrainers();
         return ResponseEntity.ok(unassignedTrainers);
     }
 
-    @ApiOperation(value = "Update trainee trainers")
+    @Operation(summary = "Update trainee trainers")
     @PutMapping("/{traineeUserName}/trainers")
     public ResponseEntity<?> updateTraineeTrainers(@PathVariable String traineeUserName, @RequestBody List<String> trainerUserNames) {
         try {
@@ -197,7 +195,7 @@ public class TraineeController {
         }
     }
 
-    @ApiOperation(value = "Get trainee training list")
+    @Operation(summary = "Get trainee training list")
     @GetMapping("/trainings")
     public ResponseEntity<?> getTraineeTrainingsList(
             @RequestParam String username,
@@ -226,7 +224,7 @@ public class TraineeController {
         }
     }
 
-    @ApiOperation(value = "Activate trainee")
+    @Operation(summary = "Activate trainee")
     @PatchMapping("/{username}/activate")
     public ResponseEntity<?> activateTrainee(@PathVariable String username, @RequestParam boolean isActive) {
         try {
@@ -237,7 +235,7 @@ public class TraineeController {
         }
     }
 
-    @ApiOperation(value = "Deactivate trainee")
+    @Operation(summary = "Deactivate trainee")
     @PatchMapping("/{username}/deactivate")
     public ResponseEntity<?> deactivateTrainee(@PathVariable String username, @RequestParam boolean isActive) {
         try {
