@@ -1,4 +1,7 @@
+# Configuración compartida para todos los perfiles
 spring:
+  profiles:
+    active: local
   main:
     lazy-initialization: true
   h2:
@@ -11,11 +14,5 @@ spring:
     password: sa
     initialization-mode: always
 
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
-        show-sql: true
-        ddl-auto: create
 
 

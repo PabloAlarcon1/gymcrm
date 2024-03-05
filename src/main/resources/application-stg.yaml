@@ -1,0 +1,18 @@
+security:
+  basic:
+    enabled: true
+    username: stg_admin
+    password: stg_password
+logging:
+  level:
+    root: INFO
+  file: /var/log/myapp-stg.log
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+    file: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+jpa:
+  properties:
+    hibernate:
+      dialect: org.hibernate.dialect.H2Dialect
+      show-sql: true
+      ddl-auto: update
