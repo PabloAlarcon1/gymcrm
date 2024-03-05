@@ -101,7 +101,7 @@ public class TraineeController {
             profile.put("lastName", trainee.getUser().getLastName());
             profile.put("dateOfBirth", trainee.getDateOfBirth());
             profile.put("address", trainee.getAddress());
-            profile.put("isActive", trainee.getUser().getActive());
+            profile.put("isActive", trainee.getUser().isActive());
             List<Map<String, String>> trainersList = trainee.getTrainings().stream()
                     .map(training -> {
                         Map<String, String> trainerMap = new HashMap<>();

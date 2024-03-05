@@ -196,5 +196,16 @@ public class TrainerService {
         return false;
     }
 
+    public int getTotalTrainers() {
+        return trainerRepository.findAll().size();
+    }
+
+    public int getTotalActiveTrainers() {
+        return (int) trainerRepository.findAll().stream()
+                .filter(trainer -> trainer.getUser().isActive())
+                .count();
+    }
+
+
 
 }

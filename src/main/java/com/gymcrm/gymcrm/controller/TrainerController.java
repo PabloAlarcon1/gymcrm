@@ -52,7 +52,7 @@ public class TrainerController {
         response.put("firstName", trainer.getUser().getFirstName());
         response.put("lastName", trainer.getUser().getLastName());
         response.put("specialization", trainer.getSpecialization().getName());
-        response.put("isActive", trainer.getUser().getActive());
+        response.put("isActive", trainer.getUser().isActive());
 
         // Obtener la lista de trainees
         List<Map<String, String>> traineesList = trainer.getTrainings().stream()
@@ -79,7 +79,7 @@ public class TrainerController {
             // Actualizar los detalles del perfil del entrenador
             existingTrainer.getUser().setFirstName(updatedTrainer.getUser().getFirstName());
             existingTrainer.getUser().setLastName(updatedTrainer.getUser().getLastName());
-            existingTrainer.getUser().setActive(updatedTrainer.getUser().getActive());
+            existingTrainer.getUser().setActive(updatedTrainer.getUser().isActive());
 
             // Actualizar la especialización del entrenador
             existingTrainer.setSpecialization(updatedTrainer.getSpecialization());

@@ -95,11 +95,13 @@ public class User {
         this.password = password;
     }
 
-    public Boolean getActive() {
+    public Boolean isActive() {
         return isActive;
     }
 
     public void setActive(Boolean active) {
         isActive = active;
     }
+
+
 }

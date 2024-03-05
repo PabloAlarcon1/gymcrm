@@ -244,6 +244,17 @@ public class TraineeService {
                 .collect(Collectors.toList());
     }
 
+    public int getTotalTrainees() {
+        return traineeRepository.findAll().size();
+    }
+
+    public int getTotalActiveTrainees() {
+        return (int) traineeRepository.findAll().stream()
+                .filter(trainee -> trainee.getUser().isActive())
+                .count();
+    }
+
+
 
 
 
