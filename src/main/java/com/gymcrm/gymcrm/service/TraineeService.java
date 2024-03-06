@@ -1,11 +1,11 @@
 package com.gymcrm.gymcrm.service;
 
-import com.gymcrm.gymcrm.exception.DuplicatedResourceException;
 import com.gymcrm.gymcrm.model.*;
 import com.gymcrm.gymcrm.repository.TraineeRepository;
 import com.gymcrm.gymcrm.repository.TrainerRepository;
 import com.gymcrm.gymcrm.repository.TrainingRepository;
 import com.gymcrm.gymcrm.repository.UserRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,24 +24,27 @@ public class TraineeService {
     private final TrainingRepository trainingRepository;
     private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;
+    private final MeterRegistry meterRegistry;
 
     @Autowired
-    public TraineeService(TraineeRepository traineeRepository, TrainingRepository trainingRepository, TrainerRepository trainerRepository, UserRepository userRepository) {
+    public TraineeService(TraineeRepository traineeRepository, TrainingRepository trainingRepository, TrainerRepository trainerRepository, UserRepository userRepository, MeterRegistry meterRegistry) {
         this.traineeRepository = traineeRepository;
         this.trainingRepository = trainingRepository;
         this.trainerRepository = trainerRepository;
         this.userRepository = userRepository;
+        this.meterRegistry = meterRegistry;
     }
 
-    public void create(Trainee trainee) {
+    /* public void create(Trainee trainee) {
         log.info("Request received to create trainer");
         if (trainee.getId() != null && traineeRepository.findById(trainee.getId()).isPresent()) {
             log.info("Trainee with supplied id already exist, throwing exception");
             throw DuplicatedResourceException.builder().detailMessage("Trainee with id already exist").build();
         }
         traineeRepository.save(trainee);
+        this.meterRegistry.counter("crm.service.trainee.creation").increment();
         log.info("Trainee created successfully");
-    }
+    } */
 
     public User saveUser(User user) {
         if (traineeRepository.existsByUserUserName(user.getUserName())) {
@@ -56,21 +59,25 @@ public class TraineeService {
             throw new IllegalArgumentException("Trainee with the same username already exists.");
         }
         log.info("Trainee saved successfully");
+        this.meterRegistry.counter("crm.service.trainee.creation").increment();
         return traineeRepository.save(trainee);
     }
 
     public Trainee getTraineeById(Integer id) {
         log.info("Trainee found successfully");
+        this.meterRegistry.counter("crm.service.trainee.getTraineeById").increment();
         return traineeRepository.findById(id).orElse(null);
     }
 
     public List<Trainee> getAllTrainees() {
         log.info("Trainees found successfully");
+        this.meterRegistry.counter("crm.service.trainee.getAllTrainees").increment();
         return traineeRepository.findAll();
     }
 
     public Trainee updateTrainee(Trainee trainee) {
         log.info("Trainee updated successfully");
+        this.meterRegistry.counter("crm.service.trainee.updateTrainee").increment();
         return traineeRepository.save(trainee);
     }
 
@@ -103,6 +110,7 @@ public class TraineeService {
         Optional<Trainee> traineeOptional = traineeRepository.findByUserUserName(userName);
         if (traineeOptional.isPresent()) {
             log.info("Trainee found successfully");
+            this.meterRegistry.counter("crm.service.trainee.getTraineeByUsername").increment();
             return traineeOptional.get();
         } else {
             throw new IllegalArgumentException("Trainee with username " + userName + " not found.");
@@ -116,6 +124,7 @@ public class TraineeService {
             trainee.getUser().setPassword(newPassword);
             traineeRepository.save(trainee);
             log.info("Password changed successfully");
+            this.meterRegistry.counter("crm.service.trainee.changedPassword").increment();
         } else {
             throw new IllegalArgumentException("Trainee with username " + username + " not found.");
         }

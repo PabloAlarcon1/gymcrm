@@ -1,11 +1,11 @@
 package com.gymcrm.gymcrm.service;
 
-import com.gymcrm.gymcrm.exception.DuplicatedResourceException;
 import com.gymcrm.gymcrm.exception.ResourceNotFoundException;
 import com.gymcrm.gymcrm.model.Trainee;
 import com.gymcrm.gymcrm.model.Trainer;
 import com.gymcrm.gymcrm.model.Training;
 import com.gymcrm.gymcrm.repository.TrainerRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,14 +22,16 @@ public class TrainerService {
     public static final String TRAINER_NOT_FOUND = "Trainer not found";
 
     private final TrainerRepository trainerRepository;
+    private final MeterRegistry meterRegistry;
 
     @Autowired
-    public TrainerService(TrainerRepository trainerRepository) {
+    public TrainerService(TrainerRepository trainerRepository, MeterRegistry meterRegistry) {
 
         this.trainerRepository = trainerRepository;
+        this.meterRegistry = meterRegistry;
     }
 
-    public void create(Trainer trainer) {
+    /* public void create(Trainer trainer) {
         log.info("Request received to create trainer");
         if (trainer.getId() != null && trainerRepository.findById(trainer.getId()).isPresent()) {
             log.info("Trainer with supplied id already exist, throwing exception");
@@ -37,13 +39,16 @@ public class TrainerService {
         }
         trainerRepository.save(trainer);
         log.info("Trainer created successfully");
-    }
+        this.meterRegistry.counter("crm.service.trainer.creation").increment();
+    } */
 
     public Trainer saveTrainer(Trainer trainer) {
         if (trainerRepository.existsByUserUserName(trainer.getUser().getUserName())) {
             throw new IllegalArgumentException("Trainer with the same username already exists.");
         }
+        this.meterRegistry.counter("crm.service.trainer.creation").increment();
         return trainerRepository.save(trainer);
+
     }
 
     public Trainer get(Integer id) {
@@ -53,6 +58,7 @@ public class TrainerService {
     }
 
     public List<Trainer> getAllTrainers() {
+        this.meterRegistry.counter("crm.service.trainer.getAllTrainers").increment();
         return trainerRepository.findAll();
     }
 
@@ -64,12 +70,14 @@ public class TrainerService {
             throw new ResourceNotFoundException("Trainer not found with id: " + trainer.getId());
         }
         log.info("Trainer found successfully");
+        this.meterRegistry.counter("crm.service.trainer.update").increment();
     }
 
     public void deleteTrainer(Integer id) {
         log.info("Request received to delete trainer");
         trainerRepository.deleteById(id);
         log.info("Trainer deleted successfully");
+        this.meterRegistry.counter("crm.service.trainer.deleted").increment();
     }
 
     public boolean verifyCredentials(String userName, String password) {
@@ -80,6 +88,7 @@ public class TrainerService {
             Trainer trainer = optionalTrainer.get();
             // Comparar la contraseña proporcionada con la contraseña almacenada en el Trainer
             log.info("Verified credentials");
+            this.meterRegistry.counter("crm.service.trainer.verifiedCredentials").increment();
             return trainer.getUser().getPassword().equals(password);
         } else {
             log.info("Credentials do not match");
@@ -103,6 +112,7 @@ public class TrainerService {
             trainer.getUser().setPassword(newPassword);
             trainerRepository.save(trainer);
             log.info("Password changed successfully");
+            this.meterRegistry.counter("crm.service.trainer.changedPassword").increment();
         } else {
             throw new IllegalArgumentException("Trainer with username " + userName + " not found.");
         }
@@ -129,6 +139,7 @@ public class TrainerService {
             trainer.getUser().setActive(true);
             trainerRepository.save(trainer);
             log.info("Trainer activated successfully");
+            this.meterRegistry.counter("crm.service.trainer.activatedTrainer").increment();
         } else {
             throw new IllegalArgumentException("Trainer with ID " + trainerId + " not found.");
         }
@@ -141,6 +152,7 @@ public class TrainerService {
             trainer.getUser().setActive(false);
             trainerRepository.save(trainer);
             log.info("Trainer deactivated successfully");
+            this.meterRegistry.counter("crm.service.trainer.deactivatedTrainer").increment();
         } else {
             throw new IllegalArgumentException("Trainer with ID " + trainerId + " not found.");
         }
@@ -150,14 +162,16 @@ public class TrainerService {
         Trainer trainer = getTrainerByUsername(userName);
         trainer.getUser().setActive(isActive);
         trainerRepository.save(trainer);
-        log.info("Trainer {} successfully activated/deactivated", userName);
+        log.info("Trainer {} successfully activated", userName);
+        this.meterRegistry.counter("crm.service.trainer.activatedTrainerByUsername").increment();
     }
 
     public void deactivateTrainerByUsername(String userName, boolean isActive) {
         Trainer trainer = getTrainerByUsername(userName);
         trainer.getUser().setActive(isActive);
         trainerRepository.save(trainer);
-        log.info("Trainer {} successfully activated/deactivated", userName);
+        log.info("Trainer {} successfully deactivated", userName);
+        this.meterRegistry.counter("crm.service.trainer.deactivatedTrainerByUsername").increment();
     }
 
     public List<Training> getTrainerTrainingsByUsernameAndCriteria(String userName, LocalDate fromDate, LocalDate toDate, String traineeName) {
