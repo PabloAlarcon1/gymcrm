@@ -1,6 +1,6 @@
 package com.gymcrm.gymcrm.config;
 
-import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,27 +24,44 @@ public class CustomMetrics {
 
     private void registerMetrics() {
         // Metric: Total number of trainers
-        Gauge.builder("trainers.total", trainerService::getTotalTrainers)
+        Counter.builder("trainers.total")
                 .description("Total number of trainers")
                 .register(meterRegistry);
 
         // Metric: Total number of trainees
-        Gauge.builder("trainees.total", traineeService::getTotalTrainees)
+        Counter.builder("trainees.total")
                 .description("Total number of trainees")
                 .register(meterRegistry);
 
         // Metric: Total number of active trainers
-        Gauge.builder("trainers.active", () -> trainerService.getTotalActiveTrainers())
+        Counter.builder("trainers.active")
                 .description("Total number of active trainers")
                 .register(meterRegistry);
 
         // Metric: Total number of active trainees
-        Gauge.builder("trainees.active", () -> traineeService.getTotalActiveTrainees())
+        Counter.builder("trainees.active")
                 .description("Total number of active trainees")
                 .register(meterRegistry);
 
+        // Update counters
+        updateCounters();
+    }
 
+    private void updateCounters() {
+        // Update total number of trainers
+        Counter trainersTotalCounter = meterRegistry.counter("trainers.total");
+        trainersTotalCounter.increment(trainerService.getTotalTrainers());
 
+        // Update total number of trainees
+        Counter traineesTotalCounter = meterRegistry.counter("trainees.total");
+        traineesTotalCounter.increment(traineeService.getTotalTrainees());
 
+        // Update total number of active trainers
+        Counter activeTrainersCounter = meterRegistry.counter("trainers.active");
+        activeTrainersCounter.increment(trainerService.getTotalActiveTrainers());
+
+        // Update total number of active trainees
+        Counter activeTraineesCounter = meterRegistry.counter("trainees.active");
+        activeTraineesCounter.increment(traineeService.getTotalActiveTrainees());
     }
 }

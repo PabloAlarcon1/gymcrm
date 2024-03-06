@@ -1,4 +1,3 @@
-# Configuración compartida para todos los perfiles
 spring:
   profiles:
     active: local
@@ -13,6 +12,20 @@ spring:
     username: sa
     password: sa
     initialization-mode: always
+  management:
+    endpoint:
+      info:
+        enabled: true
+    endpoints:
+      web:
+        exposure:
+          include: health, metrics, prometheus, loggers
+  micrometer:
+    enable: true
+    export:
+      prometheus:
+        enabled: true
+
 
 
 
