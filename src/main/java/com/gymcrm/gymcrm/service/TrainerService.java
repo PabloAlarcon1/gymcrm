@@ -5,11 +5,13 @@ import com.gymcrm.gymcrm.model.Trainee;
 import com.gymcrm.gymcrm.model.Trainer;
 import com.gymcrm.gymcrm.model.Training;
 import com.gymcrm.gymcrm.repository.TrainerRepository;
+import io.github.resilience4j.timelimiter.TimeLimiter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,8 @@ public class TrainerService {
 
     private final TrainerRepository trainerRepository;
     private final MeterRegistry meterRegistry;
+
+    TimeLimiter timeLimiter = TimeLimiter.of(Duration.parse("saveTimeLimiter"));
 
     @Autowired
     public TrainerService(TrainerRepository trainerRepository, MeterRegistry meterRegistry) {
@@ -42,6 +46,7 @@ public class TrainerService {
         this.meterRegistry.counter("crm.service.trainer.creation").increment();
     } */
 
+    @io.github.resilience4j.timelimiter.annotation.TimeLimiter(name = "saveTimeLimiter")
     public Trainer saveTrainer(Trainer trainer) {
         if (trainerRepository.existsByUserUserName(trainer.getUser().getUserName())) {
             throw new IllegalArgumentException("Trainer with the same username already exists.");
@@ -63,6 +68,7 @@ public class TrainerService {
     }
 
 
+    @io.github.resilience4j.timelimiter.annotation.TimeLimiter(name = "saveTimeLimiter")
     public void update(Trainer trainer) {
         log.info("Request received to retrieve trainer");
         Optional<Trainer> trainerBD = trainerRepository.findById(trainer.getId());
@@ -80,6 +86,7 @@ public class TrainerService {
         this.meterRegistry.counter("crm.service.trainer.deleted").increment();
     }
 
+    @io.github.resilience4j.timelimiter.annotation.TimeLimiter(name = "saveTimeLimiter")
     public boolean verifyCredentials(String userName, String password) {
         Optional<Trainer> optionalTrainer = trainerRepository.findByUserUserName(userName);
 
@@ -105,6 +112,7 @@ public class TrainerService {
 
 
 
+    @io.github.resilience4j.timelimiter.annotation.TimeLimiter(name = "saveTimeLimiter")
     public void changePassword(String userName, String newPassword) {
         Optional<Trainer> trainerOptional = trainerRepository.findByUserUserName(userName);
         if (trainerOptional.isPresent()) {

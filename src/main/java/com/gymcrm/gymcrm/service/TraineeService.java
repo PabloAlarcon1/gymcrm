@@ -5,11 +5,13 @@ import com.gymcrm.gymcrm.repository.TraineeRepository;
 import com.gymcrm.gymcrm.repository.TrainerRepository;
 import com.gymcrm.gymcrm.repository.TrainingRepository;
 import com.gymcrm.gymcrm.repository.UserRepository;
+import io.github.resilience4j.timelimiter.TimeLimiter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,7 @@ public class TraineeService {
     private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;
     private final MeterRegistry meterRegistry;
+    TimeLimiter timeLimiter = TimeLimiter.of(Duration.parse("saveTimeLimiter"));
 
     @Autowired
     public TraineeService(TraineeRepository traineeRepository, TrainingRepository trainingRepository, TrainerRepository trainerRepository, UserRepository userRepository, MeterRegistry meterRegistry) {
@@ -47,6 +50,7 @@ public class TraineeService {
     } */
 
     // @TimeLimiter(name = "saveTimeLimiter")
+    @io.github.resilience4j.timelimiter.annotation.TimeLimiter(name = "saveTimeLimiter")
     public User saveUser(User user) {
         if (traineeRepository.existsByUserUserName(user.getUserName())) {
             throw new IllegalArgumentException("User with the same username already exists.");
@@ -55,6 +59,7 @@ public class TraineeService {
         return userRepository.save(user);
     }
 
+    @io.github.resilience4j.timelimiter.annotation.TimeLimiter(name = "saveTimeLimiter")
     public Trainee saveTrainee(Trainee trainee) {
         if (traineeRepository.existsByUserUserName(trainee.getUser().getUserName())) {
             throw new IllegalArgumentException("Trainee with the same username already exists.");
@@ -77,6 +82,7 @@ public class TraineeService {
         return traineeRepository.findAll();
     }
 
+    @io.github.resilience4j.timelimiter.annotation.TimeLimiter(name = "saveTimeLimiter")
     public Trainee updateTrainee(Trainee trainee) {
         log.info("Trainee updated successfully");
         this.meterRegistry.counter("crm.service.trainee.updateTrainee").increment();
@@ -93,6 +99,7 @@ public class TraineeService {
         }
     }
 
+    @io.github.resilience4j.timelimiter.annotation.TimeLimiter(name = "saveTimeLimiter")
     public boolean verifyCredentials(String username, String password) {
         Optional<Trainee> traineeOptional = traineeRepository.findByUserUserName(username);
 
@@ -119,6 +126,7 @@ public class TraineeService {
         }
     }
 
+    @io.github.resilience4j.timelimiter.annotation.TimeLimiter(name = "saveTimeLimiter")
     public void changePassword(String username, String newPassword) {
         Optional<Trainee> traineeOptional = traineeRepository.findByUserUserName(username);
         if (traineeOptional.isPresent()) {
