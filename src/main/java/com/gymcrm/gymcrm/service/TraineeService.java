@@ -5,14 +5,12 @@ import com.gymcrm.gymcrm.repository.TraineeRepository;
 import com.gymcrm.gymcrm.repository.TrainerRepository;
 import com.gymcrm.gymcrm.repository.TrainingRepository;
 import com.gymcrm.gymcrm.repository.UserRepository;
-import io.github.resilience4j.timelimiter.TimeLimiter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +26,7 @@ public class TraineeService {
     private final TrainerRepository trainerRepository;
     private final UserRepository userRepository;
     private final MeterRegistry meterRegistry;
-    TimeLimiter timeLimiter = TimeLimiter.of(Duration.parse("saveTimeLimiter"));
+    //TimeLimiter timeLimiter = TimeLimiter.of(Duration.parse("saveTimeLimiter"));
 
     private final SecureRandom random = new SecureRandom();
 

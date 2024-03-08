@@ -33,7 +33,7 @@ public class TraineeController {
 
 
     @Autowired
-    public TraineeController(TraineeService traineeService) {
+    public TraineeController(TraineeService traineeService, PasswordEncoder passwordEncoder) {
         this.traineeService = traineeService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -133,6 +133,8 @@ public class TraineeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+
 
     @Operation(summary = "Update trainee profile by ID")
     @PutMapping("/{id}")

@@ -22,7 +22,7 @@ public class TraineeControllerTest {
 
         // Crear instancia de TraineeController con el servicio mockeado
         TraineeController traineeController;
-        traineeController = new TraineeController(traineeService);
+        traineeController = new TraineeController(traineeService, null);
 
         // Datos de prueba para el Trainee
         TraineeController.TraineeRegistrationRequest request = new TraineeController.TraineeRegistrationRequest();

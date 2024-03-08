@@ -26,8 +26,7 @@ public class User {
     @Column(name = "IS_ACTIVE", nullable = false)
     private Boolean isActive;
 
-    @Column(name = "SALT", nullable = false)
-    private String salt;
+
 
 
 
