@@ -35,16 +35,6 @@ public class TrainerService {
         this.meterRegistry = meterRegistry;
     }
 
-    /* public void create(Trainer trainer) {
-        log.info("Request received to create trainer");
-        if (trainer.getId() != null && trainerRepository.findById(trainer.getId()).isPresent()) {
-            log.info("Trainer with supplied id already exist, throwing exception");
-            throw DuplicatedResourceException.builder().detailMessage("Trainer with id already exist").build();
-        }
-        trainerRepository.save(trainer);
-        log.info("Trainer created successfully");
-        this.meterRegistry.counter("crm.service.trainer.creation").increment();
-    } */
 
     @io.github.resilience4j.timelimiter.annotation.TimeLimiter(name = "saveTimeLimiter")
     public Trainer saveTrainer(Trainer trainer) {

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
@@ -29,6 +30,8 @@ public class TraineeService {
     private final MeterRegistry meterRegistry;
     TimeLimiter timeLimiter = TimeLimiter.of(Duration.parse("saveTimeLimiter"));
 
+    private final SecureRandom random = new SecureRandom();
+
     @Autowired
     public TraineeService(TraineeRepository traineeRepository, TrainingRepository trainingRepository, TrainerRepository trainerRepository, UserRepository userRepository, MeterRegistry meterRegistry) {
         this.traineeRepository = traineeRepository;
@@ -38,18 +41,7 @@ public class TraineeService {
         this.meterRegistry = meterRegistry;
     }
 
-    /* public void create(Trainee trainee) {
-        log.info("Request received to create trainer");
-        if (trainee.getId() != null && traineeRepository.findById(trainee.getId()).isPresent()) {
-            log.info("Trainee with supplied id already exist, throwing exception");
-            throw DuplicatedResourceException.builder().detailMessage("Trainee with id already exist").build();
-        }
-        traineeRepository.save(trainee);
-        this.meterRegistry.counter("crm.service.trainee.creation").increment();
-        log.info("Trainee created successfully");
-    } */
 
-    // @TimeLimiter(name = "saveTimeLimiter")
     @io.github.resilience4j.timelimiter.annotation.TimeLimiter(name = "saveTimeLimiter")
     public User saveUser(User user) {
         if (traineeRepository.existsByUserUserName(user.getUserName())) {
