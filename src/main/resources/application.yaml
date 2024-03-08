@@ -25,6 +25,11 @@ spring:
     export:
       prometheus:
         enabled: true
+  resilience4j:
+    instances:
+      saveTimeLimiter:
+        timeoutDuration: 3s
+
 
 
 

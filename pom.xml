@@ -79,6 +79,16 @@
 			<artifactId>micrometer-registry-prometheus</artifactId>
 			<version>1.11.5</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.github.resilience4j/resilience4j-timelimiter -->
+		<dependency>
+			<groupId>io.github.resilience4j</groupId>
+			<artifactId>resilience4j-spring-boot2</artifactId>
+			<version>1.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
 
 
 	</dependencies>

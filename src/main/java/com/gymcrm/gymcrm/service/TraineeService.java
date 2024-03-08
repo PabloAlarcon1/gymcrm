@@ -46,6 +46,7 @@ public class TraineeService {
         log.info("Trainee created successfully");
     } */
 
+    // @TimeLimiter(name = "saveTimeLimiter")
     public User saveUser(User user) {
         if (traineeRepository.existsByUserUserName(user.getUserName())) {
             throw new IllegalArgumentException("User with the same username already exists.");
@@ -62,6 +63,7 @@ public class TraineeService {
         this.meterRegistry.counter("crm.service.trainee.creation").increment();
         return traineeRepository.save(trainee);
     }
+
 
     public Trainee getTraineeById(Integer id) {
         log.info("Trainee found successfully");
