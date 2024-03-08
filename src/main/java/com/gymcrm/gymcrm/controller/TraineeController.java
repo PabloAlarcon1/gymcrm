@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -27,12 +28,17 @@ import java.util.stream.Collectors;
 public class TraineeController {
 
     private final TraineeService traineeService;
+    private PasswordEncoder passwordEncoder = null;
+
 
 
     @Autowired
     public TraineeController(TraineeService traineeService) {
         this.traineeService = traineeService;
+        this.passwordEncoder = passwordEncoder;
     }
+
+
 
     @Operation(summary = "Register a new trainee")
     @PostMapping
@@ -47,7 +53,7 @@ public class TraineeController {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setUserName(request.getUserName());
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setActive(true);
 
         // Guardar el usuario en la base de datos

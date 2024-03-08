@@ -21,7 +21,8 @@ public class TraineeControllerTest {
         TraineeService traineeService = mock(TraineeService.class);
 
         // Crear instancia de TraineeController con el servicio mockeado
-        TraineeController traineeController = new TraineeController(traineeService);
+        TraineeController traineeController;
+        traineeController = new TraineeController(traineeService);
 
         // Datos de prueba para el Trainee
         TraineeController.TraineeRegistrationRequest request = new TraineeController.TraineeRegistrationRequest();

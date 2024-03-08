@@ -51,7 +51,7 @@ public class TraineeService {
             throw new IllegalArgumentException("User with the same username already exists.");
         }
         log.info("User saved successfully");
-        return user;
+        return userRepository.save(user);
     }
 
     public Trainee saveTrainee(Trainee trainee) {

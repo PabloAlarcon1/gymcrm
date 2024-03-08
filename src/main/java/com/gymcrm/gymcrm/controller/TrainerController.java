@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -20,16 +21,23 @@ import java.util.stream.Collectors;
 public class TrainerController {
 
     private final TrainerService trainerService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public TrainerController(TrainerService trainerService) {
+    public TrainerController(TrainerService trainerService, PasswordEncoder passwordEncoder) {
         this.trainerService = trainerService;
+        this.passwordEncoder = passwordEncoder;
     }
+
 
     @Operation(summary = "Register a new trainer")
     @PostMapping("/register")
     public ResponseEntity<String> registerTrainer(@RequestBody Trainer trainer) {
         try {
+            // Encripta la contraseña antes de guardarla
+            String encodedPassword = passwordEncoder.encode(trainer.getUser().getPassword());
+            trainer.getUser().setPassword(encodedPassword);
+
             // Llama al método del servicio para guardar al entrenador
             Trainer savedTrainer = trainerService.saveTrainer(trainer);
             // Devuelve el nombre de usuario y contraseña del entrenador recién registrado
